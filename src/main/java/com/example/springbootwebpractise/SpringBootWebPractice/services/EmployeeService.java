@@ -12,6 +12,7 @@ import org.springframework.util.ReflectionUtils;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -22,7 +23,8 @@ public class EmployeeService {
     private final ModelMapper modelMapper;
 
     public EmployeeDTO getEmployeeById(Long id){
-        EmployeeEntity employeeEntity = employeeRepository.findById(id).orElse(null);
+        EmployeeEntity employeeEntity = employeeRepository.findById(id)
+                .orElseThrow(()-> new NoSuchElementException("Employee not found with id: "+id));
         return modelMapper.map(employeeEntity, EmployeeDTO.class);
     }
 

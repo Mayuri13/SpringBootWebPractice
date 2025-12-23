@@ -2,6 +2,7 @@ package com.example.springbootwebpractise.SpringBootWebPractice.controllers;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 import com.example.springbootwebpractise.SpringBootWebPractice.dto.EmployeeDTO;
 import com.example.springbootwebpractise.SpringBootWebPractice.entities.EmployeeEntity;
@@ -24,6 +25,11 @@ public class EmployeeController {
     public ResponseEntity<EmployeeDTO> getEmployeeById(@PathVariable(name = "employeeId") Long id) {
         return ResponseEntity.ok(employeeService.getEmployeeById(id));
     }
+
+//    @ExceptionHandler
+//    public ResponseEntity<String> handleEmployeeNotFound(NoSuchElementException exception) {
+//        return new ResponseEntity<>("Employee not Found", HttpStatus.NOT_FOUND);
+//    }
 
     @GetMapping
     public ResponseEntity<List<EmployeeDTO>> getAllEmployees(@RequestParam(required = false) Integer age,
