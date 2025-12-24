@@ -25,6 +25,8 @@ public class EmployeeEntity {
 
     private Boolean isActive;
 
+    private Integer salary;
+
     private String role;
 
 }

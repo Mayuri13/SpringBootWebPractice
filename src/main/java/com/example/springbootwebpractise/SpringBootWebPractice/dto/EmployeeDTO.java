@@ -39,8 +39,8 @@ public class EmployeeDTO {
     @Positive(message = "Salary should be positive")
     private Integer salary;
 
-    @PrimeNumberValidation
-    private Integer favPrimeNumber;
+//    @PrimeNumberValidation
+//    private Integer favPrimeNumber;
 
     @PastOrPresent(message = "Date of joining field of employee cannot be in future")
     private LocalDate dateOfJoining;

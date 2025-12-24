@@ -2,6 +2,7 @@ package com.example.springbootwebpractise.SpringBootWebPractice.services;
 
 import com.example.springbootwebpractise.SpringBootWebPractice.dto.EmployeeDTO;
 import com.example.springbootwebpractise.SpringBootWebPractice.entities.EmployeeEntity;
+import com.example.springbootwebpractise.SpringBootWebPractice.exceptions.ResourceNotFoundException;
 import com.example.springbootwebpractise.SpringBootWebPractice.repositories.EmployeeRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.el.util.ReflectionUtil;
@@ -12,7 +13,6 @@ import org.springframework.util.ReflectionUtils;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -24,7 +24,7 @@ public class EmployeeService {
 
     public EmployeeDTO getEmployeeById(Long id){
         EmployeeEntity employeeEntity = employeeRepository.findById(id)
-                .orElseThrow(()-> new NoSuchElementException("Employee not found with id: "+id));
+                .orElseThrow(()-> new RuntimeException("Employee not found with id: "+id));
         return modelMapper.map(employeeEntity, EmployeeDTO.class);
     }
 
@@ -43,6 +43,7 @@ public class EmployeeService {
     }
 
     public EmployeeDTO updateEmployeeById(Long employeeId, EmployeeDTO employeeDTO) {
+        isExistsByEmployeeId(employeeId);
         EmployeeEntity entity = employeeRepository.findById(employeeId)
                 .map(existing -> {
                     // update existing entity fields (map into existing to preserve DB-managed fields)
@@ -60,21 +61,20 @@ public class EmployeeService {
         return modelMapper.map(entity, EmployeeDTO.class);
     }
 
-    public boolean isExistsByEmployeeId(Long employeeId) {
-        return employeeRepository.existsById(employeeId);
+    public void isExistsByEmployeeId(Long employeeId) {
+        boolean exists = employeeRepository.existsById(employeeId);
+        if(!exists) throw new ResourceNotFoundException("Employee not found with id: " + employeeId);
     }
 
     public boolean deleteEmployeeById(Long employeeId) {
-        boolean exists = isExistsByEmployeeId(employeeId);
-        if(!exists) return false;
+        isExistsByEmployeeId(employeeId);
 
         employeeRepository.deleteById(employeeId);
         return true;
     }
 
     public EmployeeDTO updatePartialEmployeeById(Long employeeId, Map<String, Object> updates) {
-        boolean exists = isExistsByEmployeeId(employeeId);
-        if(!exists) return null;
+        isExistsByEmployeeId(employeeId);
 
         EmployeeEntity employeeEntity = employeeRepository.findById(employeeId).get();
         updates.forEach((key, values) -> {
